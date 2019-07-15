@@ -17,7 +17,8 @@ function gate(req, res, next) {
   if (password && password == "mellon") {
     next();
   } else {
-    res.status(401).json({ you: "Shall not pass!" });
+    next(401);
+    // res.status(401).json({ you: "Shall not pass!" });
   }
 }
 
@@ -36,13 +37,28 @@ server.get("/paid", gate, (req, res) => {
 
 server.use("/api/hubs", gate, hubsRouter);
 
-server.get("/", (req, res) => {
-  const nameInsert = req.name ? ` ${req.name}` : "";
+function addName(req, res, next) {
+  const name = "Web 19 Developers";
+
+  // add the name to the request
+  req.teamName = name;
+  next();
+}
+
+server.get("/", addName, (req, res) => {
+  const nameInsert = req.teamName ? ` ${req.teamName}` : "";
 
   res.send(`
     <h2>Lambda Hubs API</h2>
-    <p>Welcome${nameInsert} to the Lambda Hubs API</p>
+    <p>Welcome ${nameInsert} to the Lambda Hubs API</p>
     `);
 });
+
+server.use(errorHandler);
+
+function errorHandler(error, req, res, next) {
+  console.log(error);
+  res.status(401).json({ message: "You shall not pass!" });
+}
 
 module.exports = server;
