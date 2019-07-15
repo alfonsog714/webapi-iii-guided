@@ -11,6 +11,17 @@ function logger(req, res, next) {
   next();
 }
 
+function gate(req, res, next) {
+  const password = req.headers.password;
+
+  if (password && password == "mellon") {
+    next();
+  } else {
+    res.status(401).json({ you: "Shall not pass!" });
+  }
+}
+
+// setup global middleware
 server.use(logger);
 server.use(helmet());
 server.use(express.json());
@@ -19,8 +30,8 @@ server.get("/free", (req, res) => {
   res.status(200).json({ welcome: "Web 19 Developers!" });
 });
 
-server.get("/paid", (req, res) => {
-  res.status(200).json({ you: "Shall not pass!" });
+server.get("/paid", gate, (req, res) => {
+  res.status(200).json({ welcome: "Welcome to the mines of Moria." });
 });
 
 server.use("/api/hubs", hubsRouter);
