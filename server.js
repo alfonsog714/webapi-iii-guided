@@ -34,7 +34,7 @@ server.get("/paid", gate, (req, res) => {
   res.status(200).json({ welcome: "Welcome to the mines of Moria." });
 });
 
-server.use("/api/hubs", hubsRouter);
+server.use("/api/hubs", gate, hubsRouter);
 
 server.get("/", (req, res) => {
   const nameInsert = req.name ? ` ${req.name}` : "";
